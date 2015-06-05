@@ -69,12 +69,15 @@ public:
 };
 
 class Template {
+  static const unsigned int back_buffer_size = 32;
+  enum CommentType {NONE, STYLE, SCRIPT};
+
   string path;
   unsigned int state;
   bool zero_cost_state_change;
-  bool comment;
-  char prev;
+  CommentType comment;
   vector<unsigned int> entry;
+  string prev;
 
   Tree *tree;
 public:

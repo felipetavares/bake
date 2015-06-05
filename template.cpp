@@ -173,8 +173,7 @@ Template::Template (string path) {
   this->path = path;
   this->state = 0;
   this->zero_cost_state_change = false;
-  this->comment = false;
-  this->prev = 0;
+  this->comment = NONE;
   this->tree = new Tree();
 }
 
@@ -211,18 +210,52 @@ Tree* Template::read () {
 }
 
 void Template::process (char c) {
-  if (comment) {
-    prev = c;
-    if (c == '^')
-      comment = false;
-    else
-      tree->push_text(c);
+  static const string style_begin = "<style";
+  static const string script_begin = "<script";
+  static const string script_end = "</script>";
+  static const string style_end = "</style>";
+
+  prev += c;
+
+  if (comment == SCRIPT) {
+    tree->push_text(c);
+
+    if (prev.size() >= script_end.size() &&
+        (prev.substr(prev.size()-script_end.size(), script_end.size())
+        == script_end)) {
+      comment = NONE;
+    }
+    return;
+  }
+  if (comment == STYLE) {
+    tree->push_text(c);
+
+    if (prev.size() >= style_end.size() &&
+        (prev.substr(prev.size()-style_end.size(), style_end.size())
+        == style_end)) {
+      comment = NONE;
+    }
     return;
   }
 
-  if (c == '^') {
-    comment = true;
+  if (prev.size() >= style_begin.size() &&
+      (prev.substr(prev.size()-style_begin.size(), style_begin.size())
+      == style_begin)) {
+    comment = STYLE;
+    tree->push_text(c);
     return;
+  }
+  if (prev.size() >= script_begin.size() &&
+      (prev.substr(prev.size()-script_begin.size(), script_begin.size())
+      == script_begin)) {
+    comment = SCRIPT;
+    tree->push_text(c);
+    return;
+  }
+
+  // Clean prev
+  if (prev.size() > back_buffer_size) {
+    prev = prev.substr(prev.size()-back_buffer_size, back_buffer_size);
   }
 
   while (true) {
