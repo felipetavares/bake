@@ -1,0 +1,7 @@
+AAA
+{
+  {title} - {date}
+
+  {content}
+}
+CCC
