@@ -63,9 +63,13 @@ namespace bake {
 			return string("");
 		}
 
-		int c;
-		while ((c = getc(in)) != EOF && c != '\n') {
-			author += c;
+		int c = getc(in);
+		if (c == '~') {
+			while ((c = getc(in)) != EOF && c != '\n') {
+				author += c;
+			}
+		} else {
+			fseek(in, 0, SEEK_SET);
 		}
 
 		ib = bufnew(read_size);
@@ -154,12 +158,4 @@ int main (int argc, char **argv) {
 	for (auto post :posts) {
 		delete post;
 	}
-
-	/*
-	auto out = new fstream(conf.get("output"), ios::out);
-	*out << temp->to_string();
-	out->close();
-
-	delete out;
-	*/
 }
