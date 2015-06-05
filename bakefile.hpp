@@ -16,7 +16,7 @@ using namespace std;
 namespace bake {
 
 class Configuration {
-	map <string, string> map;
+	map <string, string> mapper;
 public:
 	string get(string);
 	void set(string, string);

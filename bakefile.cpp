@@ -13,17 +13,17 @@
 using namespace bake;
 
 void Configuration::print_all () {
-	for (auto i :map) {
+	for (auto i :mapper) {
 		cout << i.first << "=\"" << i.second <<"\"" << endl;
 	}
 }
 
 void Configuration::set (string k, string v) {
-	map[k] = v;
+	mapper[k] = v;
 }
 
 string Configuration::get (string k) {
-	return map[k];
+	return mapper[k];
 }
 
 unsigned int Bakefile::state = 0;
