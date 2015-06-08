@@ -49,6 +49,8 @@ Configuration Bakefile::read () {
 			file->close();
 	} else {
 		cout << "bake: no bakefile found." << endl;
+		delete file;
+		exit(1);
 	}
 
 	delete file;

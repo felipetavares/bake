@@ -1,2 +1,6 @@
-output		= index.html
+output		= output/index.html
 template	= "templates/template.html"
+host		= "http://ctrl-c.club/~MY_USERNAME_HERE"
+lang		= en_US
+hash		= true
+date		= "%d %a %b %I%p"

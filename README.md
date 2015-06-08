@@ -51,9 +51,13 @@ You can put any keys in your bakefile, but the ones that have real functionality
 
 * **lang** - used to set the locale used by locale-specific functions (dates)
 * **template** - path to the template file
-* **output** - path to the output file
+* **output** - path to the output file, if it's a directory, an `index.html` will be generated, plus a `.html` for each post.
 * **date** - formatting string in the [strftime](http://man7.org/linux/man-pages/man3/strftime.3.html) format.
 * **host** - url to the directory where **output** is located.
+* **hash** - if set to `true` hash all post links using k33.
+
+> Note about dates: you can set a custom date for a post by using `@` in its first line (or its second, if
+the first contains an author, see below). The rest of the line will be copied to the `{date}` variable.
 
 ## Available {vars}
 

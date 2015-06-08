@@ -18,6 +18,8 @@ namespace bake {
 
 class Post {
   time_t edit_time;
+  bool use_hashed_ids;
+  bool multiple_files;
 public:
   string title;
   string content;
@@ -26,7 +28,7 @@ public:
   string link;
   string author;
 
-  Post(time_t, string, string, string, Configuration&);
+  Post(time_t, string, string, string, string, bool, Configuration&);
 private:
   void set_time(time_t&, string);
   void set_title(string&);

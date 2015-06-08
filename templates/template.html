@@ -1,34 +1,32 @@
-<!doctype HTML>
+<!DOCTYPE html>
 
 <html>
 	<head>
-		<title>Philips Personal Homepage</title>
+		<meta charset="utf-8">
+		<title>Blog Title</title>
 		<style type="text/css">
 			@import url(css/blog.css);
 		</style>
 	</head>
 
-	<body onload="main();">
-		<script>
-			window.onload = function () {
-				alert ('Hi!');
-			}
-		</script>
-
+	<body>
 		<div class="bar">
-			Philips Personal Homepage
+			Blog Title
 		</div>
 
 		<div class="page">
 			{
 			<div class="space"></div>
-			<div class="post">
-				<div class="content">
-					<div class="title">{title}</div>
+			<div class="post" id="{id}">
+				<div class="title">{title}
+					<a class="permalink" title="Permanent link to the {title} post." href="{link}">Π</a>
 					<div class="date">{date}</div>
-
+				</div>
+				<div class="content">
 					{content}
 				</div>
+
+				~{author}
 			</div>
 			}
 		</div>

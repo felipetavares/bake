@@ -206,7 +206,7 @@ Tree* Template::read () {
 
   delete file;
 
-  return tree;
+  return success;
 }
 
 void Template::process (char c) {

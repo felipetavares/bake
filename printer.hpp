@@ -14,6 +14,7 @@ public:
 	Printer(string);
 
 	void print(bake::Tree*, vector<bake::Post*>);
+	void print(bake::Tree*, bake::Post*);
 };
 
 }

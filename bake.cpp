@@ -26,6 +26,9 @@ using namespace std;
 using namespace bake;
 
 namespace bake {
+	/*
+		Sort files descending by time
+	*/
 	int timesort(const struct dirent **d1, const struct dirent **d2) {
 		struct stat info1, info2;
 		stat((*d1)->d_name, &info1);
@@ -34,6 +37,10 @@ namespace bake {
 		return info1.st_ctime > info2.st_ctime;
 	}
 
+	/*
+		Verify if the file described by 'name'
+		has extension 'g_ext'
+	*/
 	bool is_extension (string& name, string g_ext) {
 		string ext;
 
@@ -46,7 +53,11 @@ namespace bake {
 		return ext == g_ext;
 	}
 
-	string to_html (string& filename, string& author) {
+	/*
+		Convert the file in 'filename' to an html string and return it.
+		'author' and 'date' are filled if present in the file.
+	*/
+	string to_html (string& filename, string& author, string& date) {
 		struct buf *ib, *ob;
 		int ret;
 		FILE *in;
@@ -71,6 +82,15 @@ namespace bake {
 		} else {
 			fseek(in, 0, SEEK_SET);
 		}
+		c = getc(in);
+		if (c == '@') {
+			while ((c = getc(in)) != EOF && c != '\n') {
+				date += c;
+			}
+		} else {
+			fseek(in, -1, SEEK_CUR);
+		}
+
 
 		ib = bufnew(read_size);
 		bufgrow(ib, read_size);
@@ -96,7 +116,18 @@ namespace bake {
 		return result;
 	}
 
-	vector <Post*> get_posts(Configuration &conf) {
+	bool is_directory (string filename) {
+		struct stat info;
+		if (stat(filename.c_str(), &info)) {
+			return false;
+		}
+		return S_ISDIR(info.st_mode);
+	}
+
+	/*
+		Return all posts in the current directory, time-sorted
+	*/
+	vector <Post*> get_posts(Configuration &conf, bool multiple_files) {
 		char dir[] = "./";
 		struct dirent **dir_list;
 		int dir_num;
@@ -122,9 +153,9 @@ namespace bake {
 			if (!S_ISDIR(info.st_mode)) {
 				if (is_extension(filename, "markdown")) {
 					cout << "bake: processing \"" << ep->d_name << "\"" << endl;
-					string author;
-					string html = to_html(filename, author);
-					posts.push_back(new Post(info.st_mtime, string(ep->d_name), html, author, conf));
+					string author, date;
+					string html = to_html(filename, author, date);
+					posts.push_back(new Post(info.st_mtime, string(ep->d_name), html, author, date, multiple_files, conf));
 				} else
 				if (is_extension(filename, "netrec")) {
 
@@ -145,17 +176,36 @@ int main (int argc, char **argv) {
 
 	if (conf.get("lang") != "") {
 		setlocale(LC_ALL, conf.get("lang").c_str());
-		cout << "bake: locale: " << setlocale(LC_ALL,NULL) << endl;
+		cout << "bake: locale: " << setlocale(LC_ALL, NULL) << endl;
 	}
 
 	auto reader = Template(conf.get("template"));
 	auto temp = reader.read();
-	auto printer = Printer(conf.get("output"));
-	auto posts = get_posts(conf);
 
-	printer.print(temp, posts);
+	if (temp) {
+		vector <Post*> posts;
 
-	for (auto post :posts) {
-		delete post;
+		if (is_directory(conf.get("output"))) {
+			posts = get_posts(conf, true);
+			auto printer = Printer(conf.get("output")+"index.html");
+
+			// Print the main index.html page
+			printer.print(temp, posts);
+
+			for (auto post :posts) {
+				auto post_printer = Printer(conf.get("output")+post->id);
+				post_printer.print(temp, post);
+			}
+		} else {
+			posts = get_posts(conf, false);
+			auto printer = Printer(conf.get("output"));
+
+			// Print the main index.html page
+			printer.print(temp, posts);
+		}
+
+		for (auto post :posts) {
+			delete post;
+		}
 	}
 }

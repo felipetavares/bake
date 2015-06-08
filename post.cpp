@@ -9,14 +9,22 @@
 #include "post.hpp"
 #include <ctime>
 #include <sstream>
+#include <iostream>
 using namespace bake;
 
-Post::Post (time_t edit_time, string title, string content, string author, Configuration &conf) {
+Post::Post (time_t edit_time, string title, string content, string author, string date,
+            bool multiple_files, Configuration &conf) {
   this->edit_time = edit_time;
   this->content = content;
   this->author = author;
+  this->use_hashed_ids = (conf.get("hash") == "true");
+  this->multiple_files = multiple_files;
 
-  set_time(edit_time, conf.get("date"));
+  if (date == "")
+    set_time(edit_time, conf.get("date"));
+  else
+    time = date;
+
   set_title(title);
   set_id(title);
   set_link(conf.get("host"), conf.get("output"));
@@ -29,29 +37,32 @@ void Post::set_time (time_t &t, string format) {
 }
 
 void Post::set_id (string &title) {
-  /*
-  unsigned long hash = 5381;
-  int c;
+  if (use_hashed_ids) {
+    unsigned long hash = 5381;
+    int c;
 
-  for (unsigned int i=0;i<title.size();i++) {
-      c = title[i];
-      hash = ((hash << 5) + hash) + c;
+    for (unsigned int i=0;i<title.size();i++) {
+        c = title[i];
+        hash = ((hash << 5) + hash) + c;
+    }
+
+    stringstream ss;
+    ss << hash;
+
+    id = ss.str();
+  } else {
+    id = "";
+    for (char c :title) {
+      if (c == '.')
+        break;
+
+      if (c != ' ' && c != '&')
+        id += c;
+    }
   }
 
-  stringstream ss;
-  ss << hash;
-
-  id = ss.str();
-  */
-
-  id = "";
-  for (char c :title) {
-    if (c == '.')
-      break;
-
-    if (c != ' ')
-      id += c;
-  }
+  if (multiple_files)
+    id += ".html";
 }
 
 void Post::set_link (string host, string output) {
@@ -59,7 +70,10 @@ void Post::set_link (string host, string output) {
     if (host[host.size()-1] != '/')
       host += '/';
 
-  link = host + get_file (output) + "#" + id;
+  if (multiple_files)
+    link = host + get_file (output) + id;
+  else
+    link = host + get_file (output) + "#" + id;
 }
 
 void Post::set_title (string &t) {
@@ -81,7 +95,13 @@ string Post::get_file (string path) {
   if (path.size() > 0) {
     for (int i=path.size()-1;i>=0;i--) {
       if (path[i] == '/') {
-        return path.substr(i, path.size()-i);
+        i++;
+        string ret =  path.substr(i, path.size()-i);
+
+        if (ret != "." && ret != "./" && ret != "/")
+          return ret;
+        else
+          return "";
       }
     }
     return path;

@@ -1,5 +1,5 @@
-CC=clang
-CXX=clang++
+CC=gcc
+CXX=g++
 
 all: objects
 	${CXX} --std=c++11 *.cpp objects/*.o -o bake
