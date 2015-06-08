@@ -172,6 +172,8 @@ namespace bake {
 }
 
 int main (int argc, char **argv) {
+	cout << "bake: Copyright © 2015 Felipe Tavares" << endl;
+	cout << "bake: See the LICENSE file distributed with the source for licensing." << endl;
 	auto conf = Bakefile::read();
 
 	if (conf.get("lang") != "") {

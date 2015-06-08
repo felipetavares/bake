@@ -1,3 +1,5 @@
+~My Signature
+
 This is a simple *test*.
 
 Some markdown code below:

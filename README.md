@@ -21,6 +21,18 @@ Bake is intended to be used in a make-like fashion:
  4. Write blog posts in the format **<filename>**.markdown
  5. Run `bake`
 
+## Quick Start
+
+If you are just hacking around, try the following:
+
+    git clone http://github.com/felipetavares/bake.git
+    cd bake
+    make
+    sudo make install
+    bake
+
+Now open `bake/output/index.html` in a browser.
+
 ## Bakefile
 
 The bakefile should be named `bakefile` in lower case without any
