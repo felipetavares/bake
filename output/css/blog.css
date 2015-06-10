@@ -75,3 +75,7 @@ a {
 hr {
 	border: 1px solid #080;
 }
+
+.terminal {
+	background: black;
+}

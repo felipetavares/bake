@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <clocale>
+#include <sstream>
 extern "C" {
 #include "sundown/markdown.h"
 #include "sundown/buffer.h"
@@ -51,6 +52,93 @@ namespace bake {
 		reverse(ext.begin(), ext.end());
 
 		return ext == g_ext;
+	}
+
+	bool is_directory (string filename) {
+		struct stat info;
+		if (stat(filename.c_str(), &info)) {
+			return false;
+		}
+		return S_ISDIR(info.st_mode);
+	}
+
+	string get_directory (string original) {
+		for (int i=original.size()-1;i>=0;i--) {
+			if (original[i]=='/')
+				return original.substr(0, i+1);
+		}
+
+		if (is_directory(original))
+			return original+"/";
+		else
+			return "./";
+	}
+
+	void generate_netrec_stream (string id, Configuration &conf, uint32_t &tw, uint32_t &th) {
+		auto oname = get_directory(conf.get("output"));
+
+		// Files
+		fstream *file = new fstream (id, ios::in | ios::binary);
+		fstream *output = new fstream (oname+id, ios::out | ios::binary);
+
+		// Data length
+		uint64_t dlen;
+		// Read data
+		uint64_t rdata = 0;
+
+		if (file->is_open() && output->is_open()) {
+			file->read((char*)&th, sizeof(th));
+			file->read((char*)&tw, sizeof(tw));
+			file->read((char*)&dlen, sizeof(dlen));
+
+			*output << "{" << endl;
+			*output << "\"stream\": [";
+
+			while (rdata < dlen) {
+				char c;
+				file->read (&c, 1);
+
+				if (*file)
+					rdata++;
+				else
+					break;
+
+				if (rdata > 1)
+					*output << ",";
+				*output << (int)c;
+			}
+
+			*output << "]," << endl;
+
+			uint64_t timestamp;
+			uint16_t chars;
+
+			*output << "\"timing\": [";
+
+			bool first = true;
+			while (*file) {
+				file->read ((char*)&timestamp, sizeof(timestamp));
+				file->read ((char*)&chars, sizeof(chars));
+
+				if (*file) {
+					if (!first)
+						*output << ",";
+					first = false;
+					*output << "[" << ((float)timestamp/1000.0f) << "," << (int)chars << "]";
+				}
+			}
+
+			*output << "]" << endl;
+			*output << "}" << endl;
+
+			file->close();
+			output->close();
+		}
+
+		cout << "bake: netrec: terminal (" << tw << ", " << th << ")" << endl;
+
+		delete file;
+		delete output;
 	}
 
 	/*
@@ -116,14 +204,6 @@ namespace bake {
 		return result;
 	}
 
-	bool is_directory (string filename) {
-		struct stat info;
-		if (stat(filename.c_str(), &info)) {
-			return false;
-		}
-		return S_ISDIR(info.st_mode);
-	}
-
 	/*
 		Return all posts in the current directory, time-sorted
 	*/
@@ -158,7 +238,46 @@ namespace bake {
 					posts.push_back(new Post(info.st_mtime, string(ep->d_name), html, author, date, multiple_files, conf));
 				} else
 				if (is_extension(filename, "netrec")) {
+					cout << "bake: processing \"" << ep->d_name << "\"" << endl;
+					string author, date;
+					string id = string(ep->d_name);
+					string html, host=conf.get("host");
+					string url = host+((host[host.size()-1]=='/')?"":"/")+id;
+					uint32_t size_w;
+					uint32_t size_h;
 
+					generate_netrec_stream(id, conf, size_w, size_h);
+					stringstream ssw, ssh;
+					ssw << size_w;
+					ssh << size_h;
+
+					html += "<pre class=\"terminal\" id=\""+id+"\"></pre>\n";
+					html += "<script type=\"text/javascript\">\n";
+					html += "new function () {\n";
+					html += "this.tp=0;\n";
+					html += "this.sp=0;\n";
+					html += "this.s=[];\n";
+					html += "this.t=[];\n";
+					html += "this.size=["+ssw.str()+","+ssh.str()+"];\n";
+					html += "this.terminal = new term.Terminal(this.size[0],this.size[1],\""+id+"\");\n";
+					html += "this.putc = function () {\n";
+					html += "for (var i=0;i<this.t[this.tp][1];i++)\n";
+					html += "\tthis.terminal.input(this.s[this.sp++]);\n";
+					html += "this.terminal.render();\n";
+					html += "if (this.tp < this.t.length-1)\n";
+					html += "\tsetTimeout($.proxy(this.putc, this), this.t[++this.tp][0]*1000);\n";
+					html += "}\n";
+					html += "this.ondataload=function(data){\n";
+					html += "data=JSON.parse(data);\n";
+					html += "this.s=data.stream;\n";
+					html += "this.t=data.timing;\n";
+					html += "setTimeout($.proxy(this.putc, this), 0);\n";
+					html += "}\n";
+					html += "$.ajax({\"url\": \""+url+"\",\"success\": $.proxy(this.ondataload, this)});\n";
+					html += "}();";
+					html += "</script>\n";
+
+					posts.push_back(new Post(info.st_mtime, string(ep->d_name), html, author, date, multiple_files, conf));
 				}
 			}
 
