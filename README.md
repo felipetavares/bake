@@ -8,8 +8,7 @@ a new implementation in C++.
 
 You can see an example blog that uses Bake
 [here](http://poesiacompilada.com/blog/).
-Another in [here](http://ctrl-c.club/~philips). (as of writing it still uses the
-original implementation)
+Another in [here](http://ctrl-c.club/~philips).
 
 Bake is intended to be used in a make-like fashion:
 

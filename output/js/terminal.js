@@ -77,7 +77,9 @@ term = {
 					var c = this.getc(p);
 					var s = this.gets(p);
 
-					if (c == ' ') {
+					if (c === 0) {
+						this.html += ' ';
+					} else if (c == ' ' && s.bg == 0) {
 						this.html += c;
 					} else {
 						var colors = [
@@ -109,13 +111,13 @@ term = {
 
 		this.eraseDisplay = function (s, e) {
 			while (s <= e) {
-				this.buffer[s++] = ' ';
+				this.buffer[s++] = 0;
 			}
 		}
 
 		this.eraseLine = function (s, e) {
 			while (s <= e) {
-				this.putc(new term.vec2(s++, this.cursor.y), ' ');
+				this.putc(new term.vec2(s++, this.cursor.y), 0);
 			}
 		}
 
@@ -279,20 +281,8 @@ term = {
 		// @constructor
 		var size = w*h;
 		for (var i=0;i<size;i++) {
-			this.buffer[i] = ' ';
+			this.buffer[i] = 0;
 			this.styleBuffer[i] = new term.style();
 		}
 	}
 };
-
-/*
-function do_putc () {
-	for (var i=0;i<timing[timing_position][1];i++)
-		terminal.input(stream[position++]);
-
-	terminal.render();
-
-	if (timing_position < timing.length-1)
-		setTimeout(do_putc, timing[++timing_position][0]*1000);
-}
-*/

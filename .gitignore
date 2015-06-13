@@ -1,3 +1,6 @@
 objects/
 index.html
 bake
+*.netrec
+output/*.netrec
+output/*.html

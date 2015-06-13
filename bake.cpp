@@ -260,21 +260,42 @@ namespace bake {
 					html += "this.t=[];\n";
 					html += "this.size=["+ssw.str()+","+ssh.str()+"];\n";
 					html += "this.terminal = new term.Terminal(this.size[0],this.size[1],\""+id+"\");\n";
+					html += "this.timeout = null;\n";
 					html += "this.putc = function () {\n";
 					html += "for (var i=0;i<this.t[this.tp][1];i++)\n";
 					html += "\tthis.terminal.input(this.s[this.sp++]);\n";
 					html += "this.terminal.render();\n";
-					html += "if (this.tp < this.t.length-1)\n";
-					html += "\tsetTimeout($.proxy(this.putc, this), this.t[++this.tp][0]*1000);\n";
+					html += "if (this.tp < this.t.length-1) {\n";
+					html += "\tthis.timeout = setTimeout($.proxy(this.putc, this), this.t[++this.tp][0]*1000);\n";
+					html += "} else {\n";
+					html += "\tthis.stop();\n";
+					html += "\tthis.sp = this.tp = 0;\n";
 					html += "}\n";
+					html += "}\n";
+
+					html += "this.play = function () {\n";
+					html += "if (!this.timeout && this.s && this.t)\n";
+					html += "\tthis.timeout = setTimeout($.proxy(this.putc, this), 0);\n";
+					html += "else\n";
+					html += "\tthis.stop();\n";
+					html += "}\n";
+
+					html += "this.stop = function () {\n";
+					html += "if (this.timeout) {";
+					html += "\tclearTimeout(this.timeout);\n";
+					html += "\tthis.timeout = null;\n";
+					html += "}\n";
+					html += "}\n";
+
 					html += "this.ondataload=function(data){\n";
 					html += "data=JSON.parse(data);\n";
 					html += "this.s=data.stream;\n";
 					html += "this.t=data.timing;\n";
-					html += "setTimeout($.proxy(this.putc, this), 0);\n";
 					html += "}\n";
+					html += "this.terminal.render();\n";
 					html += "$.ajax({\"url\": \""+url+"\",\"success\": $.proxy(this.ondataload, this)});\n";
-					html += "}();";
+					html += "document.getElementById(\""+id+"\").onclick = $.proxy(this.play, this);\n";
+					html += "}();\n";
 					html += "</script>\n";
 
 					posts.push_back(new Post(info.st_mtime, string(ep->d_name), html, author, date, multiple_files, conf));
