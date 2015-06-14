@@ -56,7 +56,7 @@ void Post::set_id (string &title) {
       if (c == '.')
         break;
 
-      if (c != ' ' && c != '&')
+      if (c != ' ' && c != '&' && c != '#')
         id += c;
     }
   }

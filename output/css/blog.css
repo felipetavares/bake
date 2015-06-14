@@ -76,6 +76,75 @@ hr {
 	border: 1px solid #080;
 }
 
+.terminal-container {
+	position: relative;
+	padding: 0;
+	margin: 0;
+}
+
 .terminal {
 	background: black;
+	cursor: default;
+}
+
+.terminal-bar {
+	height: 32px;
+	color: black;
+	background: white;
+	position: absolute;
+	bottom: 0;
+	left: 6px;
+	right: 6px;
+}
+
+.terminal-play {
+	position: absolute;
+	left: 2px;
+	top: 2px;
+	width: 32px;
+	height: 32px;
+	cursor: pointer;
+	background: url(../img/play.png);
+	background-size: 28px 28px;
+	background-repeat: no-repeat;
+}
+
+.terminal-loading {
+	position: absolute;
+	margin-left: -32px;
+	margin-top: -32px;
+	left: 50%;
+	top: 50%;
+	width: 64px;
+	height: 64px;
+	background: red;
+}
+
+.terminal-paused {
+	position: absolute;
+	margin-left: -32px;
+	margin-top: -32px;
+	left: 50%;
+	top: 50%;
+	width: 64px;
+	height: 64px;
+	background: url(../img/pause.png);
+}
+
+.terminal-timeline {
+	height: 6px;
+	width: 100%;
+	background: #eee;
+	border-top: 1px solid #bbb;
+	position: absolute;
+	top: 13px;
+	left: 32px;
+}
+
+.terminal-pointer {
+	width: 6px;
+	height: 6px;
+	background: #999;
+	position: absolute;
+	left: 0;
 }

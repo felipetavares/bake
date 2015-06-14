@@ -41,7 +41,7 @@ term = {
 		}
 	},
 
-	"Terminal": function (w, h, id) {
+	"Terminal": function (w, h, id, url) {
 		this.size = new term.vec2(w, h);
 		this.cursor = new term.vec2(0, 0);
 		this.buffer = new Array(w*h);
@@ -50,6 +50,77 @@ term = {
 		this.element = document.getElementById(id);
 		this.style = new term.style();
 		this.mode = 0;
+		this.url = url;
+		this.loaded = false;
+		this.loadingAnimation = $('<div class="terminal-loading"></div>');
+		this.playBar = $('<div class="terminal-bar"></div>');
+		this.playButton = $('<div class="terminal-play"></div>');
+		this.pausedAnimation = $('<div class="terminal-paused"></div>');
+		this.timeline = $('<div class="terminal-timeline"></div>');
+		this.cursor = $('<div class="terminal-pointer"></div>');
+		this.root = $(this.element).parent();
+		this.timeout = null;
+		this.tp = this.sp = 0;
+
+		this.runTime = 0;
+		this.curTime = 0;
+
+		this.calcRunTime = function () {
+			this.runTime = 0;
+			for (var t in this.t) {
+				this.runTime += this.t[t][0];
+			}
+		}
+
+		// Load the data
+		this.onload = function (data) {
+			this.loadingAnimation.fadeOut(300);
+			this.root.append(this.pausedAnimation);
+			this.pausedAnimation.fadeIn(300);
+			data = JSON.parse(data);
+			this.s = data.stream;
+			this.t = data.timing;
+			this.calcRunTime();
+			this.loaded = true;
+		}
+
+		this.play = function () {
+			if (this.loaded) {
+				if (!this.timeout) {
+					this.playButton.css("background-image", "url(\"img/pause.png\")");
+					this.pausedAnimation.fadeOut(300);
+					this.timeout = setTimeout ($.proxy(this.putstream, this), 0);
+				} else {
+					this.stop();
+				}
+			}
+		}
+
+		this.stop = function () {
+			if (this.timeout) {
+				this.playButton.css("background-image", "url(\"img/play.png\")");
+				this.pausedAnimation.fadeIn(300);
+				clearTimeout(this.timeout);
+				this.timeout = null;
+			}
+		}
+
+		this.putstream = function () {
+			for (var i=0;i<this.t[this.tp][1];i++)
+				this.input(this.s[this.sp++]);
+			this.render();
+
+			if (this.tp < this.t.length-1) {
+				this.curTime += this.t[this.tp][0];
+				var coffset = (this.timeline.width()-this.cursor.width())*(this.curTime/this.runTime);
+				this.cursor.css("left", coffset+"px");
+				this.timeout = setTimeout($.proxy(this.putstream, this), this.t[++this.tp][0]*1000);
+			} else {
+				this.stop();
+				this.sp = this.tp = 0;
+				this.curTime = 0;
+			}
+		}
 
 		this.getc = function (p) {
 			return this.buffer[this.size.x*p.y+p.x];
@@ -284,5 +355,31 @@ term = {
 			this.buffer[i] = 0;
 			this.styleBuffer[i] = new term.style();
 		}
+
+		this.render();
+
+		$("#"+id).parent().prepend(this.loadingAnimation);
+		$("#"+id).parent().prepend(this.playBar);
+		this.playBar.append(this.playButton);
+		this.playBar.append(this.timeline);
+		this.playButton.click($.proxy(this.play, this));
+		this.timeline.append(this.cursor);
+		this.timeline.width(this.playBar.width()-this.playButton.width());
+
+		$("#"+id).parent().mouseenter(
+			$.proxy(function (evt) {
+				this.playBar.fadeIn(300);
+			}, this)
+		);
+		$("#"+id).parent().mouseleave(
+			$.proxy(function (evt) {
+				this.playBar.fadeOut(300);
+			}, this)
+		);
+
+		$.ajax(this.url, {
+			"dataType": "text",
+			"success": $.proxy(this.onload, this)
+		});
 	}
 };

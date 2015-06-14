@@ -74,12 +74,24 @@ namespace bake {
 			return "./";
 	}
 
-	void generate_netrec_stream (string id, Configuration &conf, uint32_t &tw, uint32_t &th) {
+	string generate_netrec_stream (string id, Configuration &conf, uint32_t &tw, uint32_t &th) {
 		auto oname = get_directory(conf.get("output"));
+
+		stringstream hashs;
+
+		unsigned long hash = 5381;
+		int c;
+
+		for (unsigned int i=0;i<id.size();i++) {
+				c = id[i];
+				hash = ((hash << 5) + hash) + c;
+		}
+
+		hashs << hash;
 
 		// Files
 		fstream *file = new fstream (id, ios::in | ios::binary);
-		fstream *output = new fstream (oname+id, ios::out | ios::binary);
+		fstream *output = new fstream (oname+hashs.str()+".json", ios::out | ios::binary);
 
 		// Data length
 		uint64_t dlen;
@@ -124,7 +136,11 @@ namespace bake {
 					if (!first)
 						*output << ",";
 					first = false;
-					*output << "[" << ((float)timestamp/1000.0f) << "," << (int)chars << "]";
+					float ftm = ((float)timestamp/1000.0f);
+					// "Fast forward" if it takes more than 15 seconds
+					if (ftm > 15)
+						ftm = 1;
+					*output << "[" << ftm << "," << (int)chars << "]";
 				}
 			}
 
@@ -139,6 +155,8 @@ namespace bake {
 
 		delete file;
 		delete output;
+
+		return hashs.str();
 	}
 
 	/*
@@ -242,24 +260,27 @@ namespace bake {
 					string author, date;
 					string id = string(ep->d_name);
 					string html, host=conf.get("host");
-					string url = host+((host[host.size()-1]=='/')?"":"/")+id;
 					uint32_t size_w;
 					uint32_t size_h;
 
-					generate_netrec_stream(id, conf, size_w, size_h);
+					string nid = generate_netrec_stream(id, conf, size_w, size_h);
 					stringstream ssw, ssh;
 					ssw << size_w;
 					ssh << size_h;
 
-					html += "<pre class=\"terminal\" id=\""+id+"\"></pre>\n";
+					string url = host+((host[host.size()-1]=='/')?"":"/")+nid+".json";
+
+					html += "<div class=\"terminal-container\"><pre class=\"terminal\" id=\""+nid+"\"></pre></div>\n";
 					html += "<script type=\"text/javascript\">\n";
+					html += "new term.Terminal("+ssw.str()+","+ssh.str()+",\""+nid+"\", \""+url+"\");\n";
+					/*
 					html += "new function () {\n";
 					html += "this.tp=0;\n";
 					html += "this.sp=0;\n";
 					html += "this.s=[];\n";
 					html += "this.t=[];\n";
 					html += "this.size=["+ssw.str()+","+ssh.str()+"];\n";
-					html += "this.terminal = new term.Terminal(this.size[0],this.size[1],\""+id+"\");\n";
+					html += "this.terminal = new term.Terminal(this.size[0],this.size[1],\""+id+"\", \""+url+"\");\n";
 					html += "this.timeout = null;\n";
 					html += "this.putc = function () {\n";
 					html += "for (var i=0;i<this.t[this.tp][1];i++)\n";
@@ -293,9 +314,9 @@ namespace bake {
 					html += "this.t=data.timing;\n";
 					html += "}\n";
 					html += "this.terminal.render();\n";
-					html += "$.ajax({\"url\": \""+url+"\",\"success\": $.proxy(this.ondataload, this)});\n";
 					html += "document.getElementById(\""+id+"\").onclick = $.proxy(this.play, this);\n";
 					html += "}();\n";
+					*/
 					html += "</script>\n";
 
 					posts.push_back(new Post(info.st_mtime, string(ep->d_name), html, author, date, multiple_files, conf));
@@ -324,6 +345,14 @@ int main (int argc, char **argv) {
 	auto reader = Template(conf.get("template"));
 	auto temp = reader.read();
 
+	Template *post_template_reader;
+	Tree* post_temp = NULL;
+
+	if (conf.get("post_template") != "") {
+		post_template_reader = new Template(conf.get("post_template"));
+		post_temp = post_template_reader->read();
+	}
+
 	if (temp) {
 		vector <Post*> posts;
 
@@ -336,7 +365,10 @@ int main (int argc, char **argv) {
 
 			for (auto post :posts) {
 				auto post_printer = Printer(conf.get("output")+post->id);
-				post_printer.print(temp, post);
+				if (post_temp)
+					post_printer.print(post_temp, post);
+				else
+					post_printer.print(temp, post);
 			}
 		} else {
 			posts = get_posts(conf, false);
@@ -350,4 +382,7 @@ int main (int argc, char **argv) {
 			delete post;
 		}
 	}
+
+	if (conf.get("post_template") != "")
+		delete post_template_reader;
 }
