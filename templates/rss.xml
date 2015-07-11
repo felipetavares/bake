@@ -7,7 +7,7 @@
     <language>Language</language>
     <managingEditor>My Name</managingEditor>
     <webMaster>Web Master's Name</webMaster>
-    <copyright>Copyright &copy; Year My Name?</copyright>
+    <copyright>Copyright &#0184; Year My Name?</copyright>
     <atom:link href="The url" rel="self" type="application/rss+xml" />
     {
     <item>
@@ -16,7 +16,7 @@
       <pubDate>{date}</pubDate>
       <author>{author}</author>
       <guid>{link}</guid>
-      <description>{content}</description>
+      <description></description>
     </item>
     }
   </channel>
