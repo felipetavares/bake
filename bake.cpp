@@ -221,13 +221,17 @@ namespace bake {
 
 		if (escape) {
 			string escaped = "";
-
+			int mode = 0;
+	
 			for (auto c :result) {
 				if (c == '>') {
 					escaped += "&gt;";
 				} else
 				if (c == '<') {
 					escaped += "&lt;";
+				} else
+				if (c == '&') {
+					escaped += "&amp;";
 				} else {
 					escaped += c;
 				}
