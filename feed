@@ -4,3 +4,4 @@ host		= "http://ctrl-c.club/~MY_USERNAME_HERE"
 lang		= en_US
 hash		= true
 date		= "%a, %d %b %Y %H:%M:%S %z"
+feed		= true

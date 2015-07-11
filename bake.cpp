@@ -163,7 +163,7 @@ namespace bake {
 		Convert the file in 'filename' to an html string and return it.
 		'author' and 'date' are filled if present in the file.
 	*/
-	string to_html (string& filename, string& author, string& date) {
+	string to_html (string& filename, string& author, string& date, bool escape) {
 		struct buf *ib, *ob;
 		int ret;
 		FILE *in;
@@ -173,8 +173,6 @@ namespace bake {
 		struct sd_callbacks callbacks;
 		struct html_renderopt options;
 		struct sd_markdown *markdown;
-
-		options.flags = HTML_USE_XHTML;
 
 		in = fopen(filename.c_str(), "r");
 		if (!in) {
@@ -221,6 +219,23 @@ namespace bake {
 
 		bufrelease(ob);
 
+		if (escape) {
+			string escaped = "";
+
+			for (auto c :result) {
+				if (c == '>') {
+					escaped += "&gt;";
+				} else
+				if (c == '<') {
+					escaped += "&lt;";
+				} else {
+					escaped += c;
+				}
+			}
+
+			return escaped;
+		}
+
 		return result;
 	}
 
@@ -254,7 +269,7 @@ namespace bake {
 				if (is_extension(filename, "markdown")) {
 					cout << "bake: processing \"" << ep->d_name << "\"" << endl;
 					string author, date;
-					string html = to_html(filename, author, date);
+					string html = to_html(filename, author, date, conf.get("feed") == "true");
 					posts.push_back(new Post(info.st_mtime, string(ep->d_name), html, author, date, multiple_files, conf));
 				} else
 				if (is_extension(filename, "netrec")) {
