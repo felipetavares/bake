@@ -82,3 +82,14 @@ These are the `vars` available for use in the template. All `vars` must be insid
 * **{author}** - post author, defined in the first line of each post
 
 > Note about authors: to define an author for a post, begin the first line of a post with a tilde `~` character. The rest of the line until a `\n` is found will be saved to **{author}**.
+
+## Feeds
+
+Bake supports custom feeds. You can create your custom template or use the one that comes with it.
+You can generate your feed by creating a custom bakefile for it and namig it for example `feed`, then,
+you can bake it with:
+
+	bake feed
+
+this way Bake will read the `feed` file as bake file and bake your custom feed.
+There is a feed bakefile example that you can use to learn how it works.
