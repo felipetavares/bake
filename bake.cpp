@@ -159,6 +159,26 @@ namespace bake {
 		return hashs.str();
 	}
 
+	string escape_html (string html) {
+		string escaped = "";
+
+		for (auto c :html) {
+			if (c == '>') {
+				escaped += "&gt;";
+			} else
+			if (c == '<') {
+				escaped += "&lt;";
+			} else
+			if (c == '&') {
+				escaped += "&amp;";
+			} else {
+				escaped += c;
+			}
+		}
+
+		return escaped;
+	}
+
 	/*
 		Convert the file in 'filename' to an html string and return it.
 		'author' and 'date' are filled if present in the file.
@@ -220,26 +240,8 @@ namespace bake {
 		bufrelease(ob);
 
 		if (escape) {
-			string escaped = "";
-			int mode = 0;
-	
-			for (auto c :result) {
-				if (c == '>') {
-					escaped += "&gt;";
-				} else
-				if (c == '<') {
-					escaped += "&lt;";
-				} else
-				if (c == '&') {
-					escaped += "&amp;";
-				} else {
-					escaped += c;
-				}
-			}
-
-			return escaped;
+			return escape_html (result);
 		}
-
 		return result;
 	}
 
@@ -269,12 +271,17 @@ namespace bake {
 				break;
 			}
 
+			bool escape = conf.get("feed") == "true";
+
 			if (!S_ISDIR(info.st_mode)) {
 				if (is_extension(filename, "markdown")) {
 					cout << "bake: processing \"" << ep->d_name << "\"" << endl;
 					string author, date;
-					string html = to_html(filename, author, date, conf.get("feed") == "true");
-					posts.push_back(new Post(info.st_mtime, string(ep->d_name), html, author, date, multiple_files, conf));
+					string html = to_html(filename, author, date, escape);
+					string p_name = string(ep->d_name);
+					if (escape)
+						p_name = escape_html(p_name);
+					posts.push_back(new Post(info.st_mtime, p_name, html, author, date, multiple_files, conf));
 				} else
 				if (is_extension(filename, "netrec")) {
 					cout << "bake: processing \"" << ep->d_name << "\"" << endl;
@@ -296,7 +303,12 @@ namespace bake {
 					html += "new term.Terminal("+ssw.str()+","+ssh.str()+",\""+nid+"\", \""+url+"\");\n";
 					html += "</script>\n";
 
-					posts.push_back(new Post(info.st_mtime, string(ep->d_name), html, author, date, multiple_files, conf));
+					string p_name = string(ep->d_name);
+
+					if (escape)
+						p_name = escape_html(p_name);
+
+					posts.push_back(new Post(info.st_mtime, p_name, html, author, date, multiple_files, conf));
 				}
 			}
 
