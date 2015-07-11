@@ -174,7 +174,7 @@ namespace bake {
 		struct html_renderopt options;
 		struct sd_markdown *markdown;
 
-		options.flags |= HTML_ESCAPE | HTML_USE_XHTML;
+		options.flags = HTML_USE_XHTML;
 
 		in = fopen(filename.c_str(), "r");
 		if (!in) {
