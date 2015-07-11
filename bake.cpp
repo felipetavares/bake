@@ -211,7 +211,8 @@ namespace bake {
 		c = getc(in);
 		if (c == '@') {
 			while ((c = getc(in)) != EOF && c != '\n') {
-				date += c;
+				if (!escape)
+					date += c;
 			}
 		} else {
 			fseek(in, -1, SEEK_CUR);
