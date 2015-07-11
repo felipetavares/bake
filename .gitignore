@@ -4,3 +4,5 @@ bake
 *.netrec
 output/*.netrec
 output/*.html
+output/*.json
+output/*.rss

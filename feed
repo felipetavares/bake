@@ -1,0 +1,6 @@
+output		= output/feed.rss
+template	= "templates/rss.xml"
+host		= "http://ctrl-c.club/~MY_USERNAME_HERE"
+lang		= en_US
+hash		= true
+date		= "%d %a %b %I%p"

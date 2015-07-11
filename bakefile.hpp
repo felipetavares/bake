@@ -26,9 +26,8 @@ public:
 
 class Bakefile {
 	static unsigned int state;
-	static constexpr char* path = (char*)"bakefile";
 public:
-	static Configuration read();
+	static Configuration read(string);
 	static void process(char, Configuration&);
 };
 

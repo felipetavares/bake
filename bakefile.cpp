@@ -28,9 +28,8 @@ string Configuration::get (string k) {
 
 unsigned int Bakefile::state = 0;
 
-Configuration Bakefile::read () {
+Configuration Bakefile::read (string path) {
 	Configuration conf;
-	string path = string(Bakefile::path);
 	char c;
 
 	fstream *file = new fstream(path, ios::in);
