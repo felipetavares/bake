@@ -18,6 +18,7 @@ Post::Post (time_t edit_time, string title, string content, string author, strin
   this->edit_time = edit_time;
   this->content = content;
   this->econtent = escape_html(content);
+  this->scontent = simplify(content);
   this->author = author;
   this->use_hashed_ids = (conf.get("hash") == "true");
   this->multiple_files = multiple_files;
@@ -91,6 +92,36 @@ void Post::set_title (string &t) {
       title += c;
     }
   }
+}
+
+string Post::simplify (string original) {
+	int state = 0;
+	string final;
+
+	for (auto c :original) {
+		switch (state) {
+			case 0:
+				if (c == '|') {
+					state = 1;
+				} else if (c == '<') {
+					state = 2;
+				} else {
+					final += c;
+				}
+			break;
+			case 1:
+				if (c == '\n') {
+					state = 0;
+				}
+			break;
+			case 2:
+				if (c == '>')
+					state = 0;
+			break;
+		}
+	}
+
+	return final;
 }
 
 string Post::get_file (string path) {

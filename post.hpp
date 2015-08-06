@@ -28,6 +28,7 @@ public:
   string id;
   string link;
   string author;
+  string scontent;
 
   Post(time_t, string, string, string, string, bool, Configuration&);
 private:
@@ -37,6 +38,8 @@ private:
   void set_id(string&);
 
   string get_file (string);
+  /* For facebook descriptions */
+  string simplify(string);
 };
 
 }

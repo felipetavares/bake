@@ -135,6 +135,9 @@ string Tree::Node::get_post (Post *p) {
   if (this->name == ":content") {
     return p->econtent;
   } else
+  if (this->name == "@content") {
+  	return p->scontent;
+  }
   if (this->name == "title") {
     return p->title;
   } else
@@ -287,7 +290,7 @@ void Template::process (char c) {
         }
       break;
       case 2:
-        if (isalnum(c)) {
+        if (isalnum(c) || c == '@' || c == ':') {
           tree->push_name(c);
           next_state(2);
         } else {
