@@ -23,6 +23,7 @@ class Post {
 public:
   string title;
   string content;
+  string econtent;
   string time;
   string id;
   string link;

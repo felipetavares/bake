@@ -14,4 +14,8 @@
 #include "post.hpp"
 #include "printer.hpp"
 
+namespace bake {
+	string escape_html (string);
+}
+
 #endif /* BAKE_H */

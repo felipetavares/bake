@@ -6,6 +6,7 @@
         as published by Sam Hocevar. See the LICENSE file for more details.
 */
 
+#include "bake.hpp"
 #include "post.hpp"
 #include <ctime>
 #include <sstream>
@@ -16,6 +17,7 @@ Post::Post (time_t edit_time, string title, string content, string author, strin
             bool multiple_files, Configuration &conf) {
   this->edit_time = edit_time;
   this->content = content;
+  this->econtent = escape_html(content);
   this->author = author;
   this->use_hashed_ids = (conf.get("hash") == "true");
   this->multiple_files = multiple_files;

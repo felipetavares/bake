@@ -132,6 +132,9 @@ string Tree::Node::get_post (Post *p) {
   if (this->name == "content") {
     return p->content;
   } else
+  if (this->name == ":content") {
+    return p->econtent;
+  } else
   if (this->name == "title") {
     return p->title;
   } else
