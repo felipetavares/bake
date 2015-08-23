@@ -13,6 +13,7 @@
 #include "template.hpp"
 #include "post.hpp"
 #include "printer.hpp"
+#include "windows.hpp"
 
 namespace bake {
 	string escape_html (string);

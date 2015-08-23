@@ -8,6 +8,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <cstdlib>
 
 #include "bakefile.hpp"
 using namespace bake;
