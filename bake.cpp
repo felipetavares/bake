@@ -35,7 +35,7 @@ namespace bake {
 		stat((*d1)->d_name, &info1);
 		stat((*d2)->d_name, &info2);
 
-		return info1.st_ctime > info2.st_ctime;
+		return info1.st_mtime > info2.st_mtime;
 	}
 
 	/*
