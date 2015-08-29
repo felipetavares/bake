@@ -80,7 +80,7 @@ These are the `vars` available for use in the template. All `vars` must be insid
 * **{date}** - post date, formated as specified by the **date** key in the bakefile.
 * **{id}** - post id (used by permalinks)
 * **{link}** - permalink to the post, uses the **id** var.
-* **{author}** - post author, defined in the first line of each post
+* **{author}** - post author, defined in the first line of each post, if not defined, the unix user name is used instead (from passwd)
 
 > Note about authors: to define an author for a post, begin the first line of a post with a tilde `~` character. The rest of the line until a `\n` is found will be saved to **{author}**.
 
