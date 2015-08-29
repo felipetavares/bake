@@ -16,6 +16,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <pwd.h>
 #include <clocale>
 #include <sstream>
 extern "C" {
@@ -206,6 +207,12 @@ namespace bake {
 				author += c;
 			}
 		} else {
+			struct stat info;
+			struct passwd *pw;
+			stat(filename.c_str(), &info);
+			pw = getpwuid(info.st_uid);
+			// Set author for system's user name
+			author = string(pw->pw_name);
 			fseek(in, 0, SEEK_SET);
 		}
 		c = getc(in);
