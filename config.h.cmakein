@@ -1,0 +1,9 @@
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
+#pragma once
+
+#cmakedefine HAVE_PWD_H
+#cmakedefine HAVE_SYS_TIME_H
+#cmakedefine HAVE_UNISTD_H
+
+#endif

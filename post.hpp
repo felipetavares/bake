@@ -10,7 +10,9 @@
 #define BAKE_POST_H
 
 #include <string>
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#endif
 #include "bakefile.hpp"
 using namespace std;
 

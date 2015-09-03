@@ -21,9 +21,6 @@ int bake::scandir (char *directory, struct dirent*** dir_list, char* blank,
     WIN32_FIND_DATA file;
     HANDLE found_file;
 
-    long long file_time = ((long long)(file.ftLastWriteTime.dwHighDateTime)<<32)
-                          |(long long)(file.ftLastWriteTime.dwLowDateTime);
-
     if ((found_file = FindFirstFile(".\\*", &file)) != INVALID_HANDLE_VALUE) {
         do {
             struct dirent d;
@@ -42,7 +39,7 @@ int bake::scandir (char *directory, struct dirent*** dir_list, char* blank,
 
     *dir_list = (struct dirent**)malloc(sizeof(struct dirent*)*info.size());
 
-    for (int i=0;i<info.size();i++) {
+    for (int i=0; i<int(info.size()); i++) {
         (*dir_list)[i] = (struct dirent*)malloc(sizeof(struct dirent));
         strcpy ((*dir_list)[i]->d_name, info[i].d_name);
         dir_num ++;
