@@ -12,7 +12,7 @@
 #include <sys/stat.h>
 using namespace std;
 
-#ifdef __WIN32__
+#ifdef _WIN32
 int bake::scandir (char *directory, struct dirent*** dir_list, char* blank,
              int (*sort)(const struct dirent **, const struct dirent **)) {
     vector <struct dirent> info;
