@@ -13,10 +13,16 @@
 #include <ctype.h>
 #include <ctime>
 #include <sys/types.h>
+#ifdef HAVE_TIME_H
 #include <dirent.h>
+#endif
 #include <sys/stat.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
 #include <clocale>
 #include <sstream>
 extern "C" {
@@ -207,6 +213,7 @@ namespace bake {
 				author += c;
 			}
 		} else {
+#ifndef _MSC_VER
 			struct stat info;
 			struct passwd *pw;
 			stat(filename.c_str(), &info);
@@ -214,6 +221,7 @@ namespace bake {
 			// Set author for system's user name
 			author = string(pw->pw_name);
 			fseek(in, 0, SEEK_SET);
+#endif
 		}
 		c = getc(in);
 		if (c == '@') {

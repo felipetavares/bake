@@ -27,6 +27,11 @@ namespace bake {
     int scandir (char *, struct dirent***, char*,
                  int (*)(const struct dirent **, const struct dirent **));
 }
+
+#if defined(_MSC_VER) && !defined(S_ISDIR)
+#define S_ISDIR(mode) ((mode & _S_IFDIR) == _S_IFDIR)
+#endif
+
 #endif
 
 #endif /* BAKE_WINDOWS_H */

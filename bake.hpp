@@ -9,6 +9,10 @@
 #ifndef BAKE_H
 #define BAKE_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "bakefile.hpp"
 #include "template.hpp"
 #include "post.hpp"
