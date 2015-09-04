@@ -33,27 +33,22 @@ Configuration Bakefile::read (string path) {
 	Configuration conf;
 	char c;
 
-	fstream *file = new fstream(path, ios::in);
+	fstream file(path, ios::in);
 
-	if (file->is_open()) {
+	if (file.is_open()) {
 			Bakefile::state = 0;
 
-			while (file->good()) {
-				file->read(&c, 1);
+			while (file.good()) {
+				file.read(&c, 1);
 
 				Bakefile::process(c, conf);
 			}
 
 			Bakefile::process('\n', conf);
-
-			file->close();
 	} else {
 		cout << "bake: no bakefile found." << endl;
-		delete file;
 		exit(1);
 	}
-
-	delete file;
 
 	return conf;
 }
