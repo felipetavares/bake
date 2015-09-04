@@ -353,7 +353,7 @@ int main (int argc, char **argv) {
 		cout << "bake: locale: " << setlocale(LC_ALL, NULL) << endl;
 	}
 
-	auto reader = Template(conf.get("template"));
+	Template reader(conf.get("template"));
 	auto temp = reader.read();
 
 	Template *post_template_reader;
