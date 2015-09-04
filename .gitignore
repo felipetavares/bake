@@ -1,4 +1,5 @@
 objects/
+build/
 index.html
 bake
 bake.exe

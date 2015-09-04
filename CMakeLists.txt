@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
 
 # Generate config.h
 include(CheckCSourceCompiles)
@@ -30,9 +30,14 @@ if(MSVC)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-  add_definitions(-std=c++11)
+  add_definitions(--std=c++11)
+  add_definitions(-DHAVE_TIME_H)
 endif()
 
+file(GLOB sundown_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+  sundown/*.c)
 file(GLOB bake_sources RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  *.cpp sundown/*.c)
-add_executable(bake ${bake_sources})
+  *.cpp)
+
+add_library(sundown OBJECT ${sundown_sources})
+add_executable(bake $<TARGET_OBJECTS:sundown> ${bake_sources})
