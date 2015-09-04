@@ -89,6 +89,10 @@ private:
   void process(char);
   void move_state(unsigned int);
   void next_state(unsigned int);
+
+  // Avoid copying
+  Template(const Template&);
+  Template& operator=(const Template&);
 };
 
 }
