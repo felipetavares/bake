@@ -32,6 +32,15 @@ If you are just hacking around, try the following:
 
 Now open `bake/output/index.html` in a browser.
 
+## Compiling with CMake (under *nix)
+
+To compile with CMake, you can (after cloning and entering the repository):
+
+	mkdir build
+	cd build
+	cmake ..
+	make
+
 ## Bakefile
 
 The bakefile should be named `bakefile` in lower case without any
@@ -94,3 +103,9 @@ you can bake it with:
 
 this way Bake will read the `feed` file as bake file and bake your custom feed.
 There is a feed bakefile example that you can use to learn how it works.
+
+# Contributors
+
+I would like to thanks these guys for their support and for submiting pull requests:
+
+ * [@dacap](https://github.com/dacap)
