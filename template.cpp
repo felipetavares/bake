@@ -191,26 +191,22 @@ Tree* Template::read () {
   auto success = tree;
   cout << "bake: template from: \"" << path << "\"" << endl;
 
-  fstream *file = new fstream(path.c_str(), ios::in);
+  fstream file(path.c_str(), ios::in);
 
-  if (file->is_open()) {
+  if (file.is_open()) {
     char c;
 
-    while (file->good()) {
-      file->read(&c, 1);
+    while (file.good()) {
+      file.read(&c, 1);
 
       this->process(c);
     }
-
-    file->close();
 
     cout << "bake: template used " << tree->count() << " nodes"<< endl;
   } else {
     cout << "bake: could not open template" << endl;
     success = NULL;
   }
-
-  delete file;
 
   return success;
 }

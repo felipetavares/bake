@@ -97,71 +97,65 @@ namespace bake {
 		hashs << hash;
 
 		// Files
-		fstream *file = new fstream (id, ios::in | ios::binary);
-		fstream *output = new fstream (oname+hashs.str()+".json", ios::out | ios::binary);
+		fstream file(id, ios::in | ios::binary);
+		fstream output(oname+hashs.str()+".json", ios::out | ios::binary);
 
 		// Data length
 		uint64_t dlen;
 		// Read data
 		uint64_t rdata = 0;
 
-		if (file->is_open() && output->is_open()) {
-			file->read((char*)&th, sizeof(th));
-			file->read((char*)&tw, sizeof(tw));
-			file->read((char*)&dlen, sizeof(dlen));
+		if (file.is_open() && output.is_open()) {
+			file.read((char*)&th, sizeof(th));
+			file.read((char*)&tw, sizeof(tw));
+			file.read((char*)&dlen, sizeof(dlen));
 
-			*output << "{" << endl;
-			*output << "\"stream\": [";
+			output << "{" << endl;
+			output << "\"stream\": [";
 
 			while (rdata < dlen) {
 				char c;
-				file->read (&c, 1);
+				file.read (&c, 1);
 
-				if (*file)
+				if (file)
 					rdata++;
 				else
 					break;
 
 				if (rdata > 1)
-					*output << ",";
-				*output << (int)c;
+					output << ",";
+				output << (int)c;
 			}
 
-			*output << "]," << endl;
+			output << "]," << endl;
 
 			uint64_t timestamp;
 			uint16_t chars;
 
-			*output << "\"timing\": [";
+			output << "\"timing\": [";
 
 			bool first = true;
-			while (*file) {
-				file->read ((char*)&timestamp, sizeof(timestamp));
-				file->read ((char*)&chars, sizeof(chars));
+			while (file) {
+				file.read ((char*)&timestamp, sizeof(timestamp));
+				file.read ((char*)&chars, sizeof(chars));
 
-				if (*file) {
+				if (file) {
 					if (!first)
-						*output << ",";
+						output << ",";
 					first = false;
 					float ftm = ((float)timestamp/1000.0f);
 					// "Fast forward" if it takes more than 15 seconds
 					if (ftm > 15)
 						ftm = 1;
-					*output << "[" << ftm << "," << (int)chars << "]";
+					output << "[" << ftm << "," << (int)chars << "]";
 				}
 			}
 
-			*output << "]" << endl;
-			*output << "}" << endl;
-
-			file->close();
-			output->close();
+			output << "]" << endl;
+			output << "}" << endl;
 		}
 
 		cout << "bake: netrec: terminal (" << tw << ", " << th << ")" << endl;
-
-		delete file;
-		delete output;
 
 		return hashs.str();
 	}
