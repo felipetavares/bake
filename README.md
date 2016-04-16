@@ -83,8 +83,8 @@ the first contains an author, see below). The rest of the line will be copied to
 
 These are the `vars` available for use in the template. All `vars` must be inside the main `{}` that defines the extension of a single post.
 
+* **{:varname}** - `:` is a syntax for html-escaped variables, e.g.: `<` is converted to `&lt;` etc)
 * **{content}** - post content
-* **{:content}** - escaped content (: is a syntax for escaped variables, where available *as of now, only :content*)
 * **{title}** - post title
 * **{date}** - post date, formated as specified by the **date** key in the bakefile.
 * **{id}** - post id (used by permalinks)

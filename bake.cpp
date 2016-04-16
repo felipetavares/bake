@@ -332,7 +332,7 @@ namespace bake {
 }
 
 int main (int argc, char **argv) {
-	cout << "bake: Copyright © 2015 Felipe Tavares" << endl;
+	cout << "bake: Copyright © 2015, 2016 Felipe Tavares" << endl;
 	cout << "bake: See the LICENSE file distributed with the source for licensing." << endl;
 
 	string configfile = "bakefile";
@@ -362,8 +362,14 @@ int main (int argc, char **argv) {
 		vector <Post*> posts;
 
 		if (is_directory(conf.get("output"))) {
+            string index_output = conf.get("output");
+
+            if (is_directory(conf.get("index_output"))) {
+              index_output = conf.get("index_output");
+            }
+
 			posts = get_posts(conf, true);
-			auto printer = Printer(conf.get("output")+"index.html");
+			auto printer = Printer(index_output+"index.html");
 
 			// Print the main index.html page
 			printer.print(temp, posts);

@@ -7,16 +7,18 @@
 using namespace std;
 
 namespace bake {
+  class Printer {
+    string filename;
 
-class Printer {
-	string filename;
 public:
-	Printer(string);
 
-	void print(bake::Tree*, vector<bake::Post*>);
-	void print(bake::Tree*, bake::Post*);
-};
+    Printer(string);
 
+    void print(bake::Tree *,
+               vector<Post *>);
+    void print(bake::Tree *,
+               bake::Post *);
+  };
 }
 
 #endif /* BAKE_PRINTER_H */
