@@ -31,6 +31,9 @@ endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
   add_definitions(--std=c++11)
+endif()
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
   add_definitions(-DHAVE_TIME_H)
 endif()
 
