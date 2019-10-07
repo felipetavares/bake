@@ -14,5 +14,5 @@ install:
 	cp bake ${INSTALL_PATH}/bin
 
 clean:
-	rm -r objects/
-	rm bake
+	rm -fr objects/
+	rm -f bake
