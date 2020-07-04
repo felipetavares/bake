@@ -109,3 +109,5 @@ There is a feed bakefile example that you can use to learn how it works.
 I would like to thanks these guys for their support and for submiting pull requests:
 
  * [@dacap](https://github.com/dacap)
+ * [@koitsu](https://github.com/koitsu)
+ * [@david-moran](https://github.com/david-moran)
