@@ -185,7 +185,7 @@ namespace bake {
 		'author' and 'date' are filled if present in the file.
 	*/
 	string to_html (string& filename, string& author, string& date, bool escape) {
-		struct buf *ib, *ob;
+		struct buf *ib, *ob, *smart_markdown;
 		int ret;
 		FILE *in;
 		int read_size = 1024;
@@ -234,16 +234,22 @@ namespace bake {
 			ib->size += ret;
 			bufgrow(ib, ib->size + read_size);
 		}
+		
+		// Transform markdown -> smartypants markdown
+		smart_markdown = bufnew(output_size);
+		sdhtml_smartypants(smart_markdown, ib->data, ib->size);
+		bufrelease(ib);
 
+		// Transform smartypants markdown -> html
 		ob = bufnew(output_size);
 
 		sdhtml_renderer(&callbacks, &options, 0);
 		markdown = sd_markdown_new(0, 16, &callbacks, &options);
 
-		sd_markdown_render(ob, ib->data, ib->size, markdown);
+		sd_markdown_render(ob, smart_markdown->data, smart_markdown->size, markdown);
 		sd_markdown_free(markdown);
 
-		bufrelease(ib);
+		bufrelease(smart_markdown);
 
 		string result = string((char*)ob->data, ob->size);
 
